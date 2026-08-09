@@ -6,21 +6,34 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { generateProject } from '../src/utils/generateProject.js'
 import { promptUser } from '../src/utils/promptUser.js';
+import { buildOptionsFromFlags } from "../src/utils/buildOptionsFromFlags.js";
 import { installDependencies, initGitRepo } from '../src/utils/postSetup.js';
 
 const program = new Command();
 
 program
   .name('express-cli')
-  .description('Boilerplate generator')
+  .description("Interactive CLI to scaffold Node.js/Express projects with optional MongoDB, JWT, Socket.io, Docker, ESLint, and Prettier.")
   .version('1.0.0');
 
 program
   .command('create <project-name>')
   .description('Creates a new express project')
-  .action(async (projectName) => {
+  .option("--mongodb", "Include MongoDB configuration")
+  .option("--jwt", "Include JWT authentication")
+  .option("--socketio", "Include Socket.io configuration")
+  .option("--docker", "Include Docker configuration")
+  .option("--eslint", "Include ESLint configuration")
+  .option("--prettier", "Include Prettier configuration")
+  .option("--no-install", "Skip npm install")
+  .option("--no-git", "Skip git init")
+  .option("-y, --yes", "Skip prompts and use flags/defaults")
+  .action(async (projectName, flags) => {
     try{
-      const options = await promptUser();
+      const options = flags.yes
+        ? buildOptionsFromFlags(flags)
+        : await promptUser();
+
       const rootDir = path.join(process.cwd(), projectName);
       const spinner = ora(`Creating project: ${projectName}...`).start();
       

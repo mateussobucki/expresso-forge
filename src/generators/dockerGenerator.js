@@ -10,7 +10,7 @@ export class DockerGenerator extends BaseGenerator{
   };
 
   buildDockerfile(){
-        return `FROM node:22-alpine
+    return `FROM node:22-alpine
 
 WORKDIR /app
 
