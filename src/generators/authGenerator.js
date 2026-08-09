@@ -1,5 +1,23 @@
-export function buildAuthController(){
-  return `import bcrypt from "bcrypt";
+import { BaseGenerator } from "./baseGenerator.js";
+
+export class AuthGenerator extends BaseGenerator{
+  getFiles(){
+    return {
+      "src/controllers/authController.js": this.buildAuthController(),
+      "src/routes/authRoutes.js": this.buildAuthRoutes(),
+      "src/middlewares/authMiddleware.js": this.buildAuthMiddleware(),
+    };
+  };
+
+  getDependencies() {
+    return {
+      jsonwebtoken: "^9.0.2",
+      bcrypt: "^5.1.1",
+    };
+  };
+
+  buildAuthController(){
+    return `import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
@@ -33,10 +51,10 @@ export async function login(req, res) {
     res.status(500).json({ error: error.message });
   }
 }`;
-};
+  };
 
-export function buildAuthRoutes(){
-  return `import { Router } from "express";
+  buildAuthRoutes(){
+    return `import { Router } from "express";
 import { register, login } from "../controllers/authController.js";
 
 const router = Router();
@@ -45,10 +63,10 @@ router.post("/register", register);
 router.post("/login", login);
 
 export default router;`;
-};
+  };
 
-export function buildAuthMiddleware(){
-  return `import jwt from "jsonwebtoken"
+  buildAuthMiddleware(){
+    return `import jwt from "jsonwebtoken"
 
 export function authMiddleware(req, res, next){
   const authHeader = req.headers.authorization;
@@ -68,4 +86,5 @@ export function authMiddleware(req, res, next){
   }
 }
   `;
+  };
 };

@@ -1,5 +1,16 @@
-export function buildDockerFile(){
-    return `FROM node:22-alpine
+import { BaseGenerator } from "./baseGenerator.js";
+
+export class DockerGenerator extends BaseGenerator{
+  getFiles(){
+    return {
+      "Dockerfile": this.buildDockerfile(),
+      "docker-compose.yaml": this.buildDockerCompose(),
+      ".dockerignore": this.buildDockerignore(),
+    };
+  };
+
+  buildDockerfile(){
+        return `FROM node:22-alpine
 
 WORKDIR /app
 
@@ -12,10 +23,11 @@ EXPOSE 3000
 
 CMD ["npm", "start"]
 `;
-}
+  };
 
-export function buildDockerCompose({ useMongoDB }) {
-  const mongoService = useMongoDB
+  buildDockerCompose(){
+    const useMongoDB = this.options.useMongoDB;
+    const mongoService = useMongoDB
     ? `
   mongo:
     image: mongo:7
@@ -47,11 +59,12 @@ volumes:
     env_file:
       - .env${dependsOn}
 ${mongoService}${volumes}`;
-};
+  };
 
-export function buildDockerignore() {
-  return `node_modules
+  buildDockerignore(){
+    return `node_modules
 .env
 .git
 `;
+  };
 };

@@ -3,12 +3,12 @@ import { version } from 'os';
 import path from 'path';
 import { start } from 'repl';
 import { validateProjectName } from './validateProjectName.js';
-import { buildServerJs } from '../templates/server.js';
-import { buildUserModel } from '../templates/mongoModel.js';
-import { buildAuthController, buildAuthMiddleware, buildAuthRoutes } from '../templates/auth.js';
-import { buildDockerFile, buildDockerCompose, buildDockerignore } from '../templates/docker.js';
-import { buildESLintConfig } from '../templates/ESLint.js';
-import { buildPrettierConfig, buildPrettierIgnore } from '../templates/prettier.js';
+import { ServerGenerator } from '../generators/serverGenerator.js';
+import { MongoModelGenerator } from '../generators/mongoGenerator.js';
+import { AuthGenerator } from '../generators/authGenerator.js';
+import { DockerGenerator } from '../generators/dockerGenerator.js';
+import { ESLintGenerator } from '../generators/ESLintGenerator.js';
+import { PrettierGenerator } from '../generators/prettierGenerator.js';
 
 export async function generateProject(projectName, options = {}){
   await validateProjectName(projectName);
@@ -28,48 +28,31 @@ export async function generateProject(projectName, options = {}){
     await fs.mkdir(path.join(rootDir, folder), { recursive: true });
   }
   
+  const generators = [new ServerGenerator(rootDir, options)];
+
+  if (options.useMongoDB) generators.push(new MongoModelGenerator(rootDir, options));
+  if (options.useJWT) generators.push(new AuthGenerator(rootDir, options));
+  if (options.useDocker) generators.push(new DockerGenerator(rootDir, options));
+  if (options.useESLint) generators.push(new ESLintGenerator(rootDir, options));
+  if (options.usePrettier) generators.push(new PrettierGenerator(rootDir, options));
+
   //CONFIGURE DEPENDENCIES
-  const dependencies = {
+  let dependencies = {
     express: "^4.19.2",
     dotenv: "^16.4.5",
   };
-
-  //mongoDB, jwt & socket.io
-  if (useMongoDB) dependencies.mongoose = "^8.5.0";
-  if (useJWT) {
-    dependencies.jsonwebtoken = "^9.0.2";
-    dependencies.bcrypt = "^5.1.1";
-  };
-  if (useSocketIO) dependencies["socket.io"] = "^4.7.5";
-
-  //prettier & eslint
-  const devDependencies = {};
-
-  const scripts = {
+  let devDependencies = {};
+  let scripts = {
     start: "node server.js",
     dev: "node --watch server.js",
   };
 
-  if(useESLint) {
-    devDependencies["eslint"] = "^9.9.0";
-    devDependencies["@eslint/js"] = "^9.9.0";
-  };
-  
-  if(useESLint){
-    scripts.lint = "eslint .";
-  };
-
-  if(usePrettier){
-    devDependencies["prettier"] = "^3.3.3";
-  };
-
-  if (usePrettier) {
-    scripts.format = "prettier --write .";
-  };
-
-  if(useESLint && usePrettier){
-    devDependencies["eslint-config-prettier"] = "^9.1.0";
-  };
+  for(const generator of generators){
+    await generator.generate();
+    Object.assign(dependencies, generator.getDependencies());
+    Object.assign(devDependencies, generator.getDevDependencies());
+    Object.assign(scripts, generator.getScripts());
+  }
 
   //MOUNT PACKAGE.JSON
   const packageJson = {
@@ -77,7 +60,7 @@ export async function generateProject(projectName, options = {}){
     version: "1.0.0",
     type: "module",
     main: "server.js",
-    scripts: scripts,
+    scripts,
     dependencies,
     ...(Object.keys(devDependencies).length > 0 && { devDependencies }),
   };
@@ -90,8 +73,7 @@ export async function generateProject(projectName, options = {}){
   //CREATE FILES
 
   //server.js
-  const serverJs = buildServerJs(options);
-  await fs.writeFile(path.join(rootDir, "server.js"), serverJs);
+  await new ServerGenerator(rootDir, options).generate();
 
   //.env
   let envContent = "PORT=3000\n";
@@ -104,37 +86,26 @@ export async function generateProject(projectName, options = {}){
 
   //user model
   if(useMongoDB){
-    await fs.writeFile(path.join(rootDir, "src/models/User.js"),
-    buildUserModel(useJWT));
+    await new MongoModelGenerator(rootDir, options).generate();
   };
 
   //auth routes and middleware
   if(useJWT){
-    await fs.writeFile(path.join(rootDir, "src/controllers/authController.js"),
-    buildAuthController());
-
-    await fs.writeFile(path.join(rootDir, "src/routes/authRoutes.js"),
-    buildAuthRoutes());
-
-    await fs.writeFile(path.join(rootDir, "src/middlewares/auth.js"),
-    buildAuthMiddleware());
+    await new AuthGenerator(rootDir, options).generate();
   };
 
   //Docker files
   if(useDocker){
-    await fs.writeFile(path.join(rootDir, "Dockerfile"), buildDockerFile());
-    await fs.writeFile(path.join(rootDir, "docker-compose.yaml"), buildDockerCompose(options));
-    await fs.writeFile(path.join(rootDir, ".dockerignore"), buildDockerignore());
+    await new DockerGenerator(rootDir, options).generate();
   };
 
   //ESLint
   if(useESLint){
-    await fs.writeFile(path.join(rootDir, "eslint.config.js"), buildESLintConfig());
+    await new ESLintGenerator(rootDir, options).generate();
   };
 
   //Prettier
   if (usePrettier) {
-    await fs.writeFile(path.join(rootDir, ".prettierrc"), buildPrettierConfig());
-    await fs.writeFile(path.join(rootDir, ".prettierignore"), buildPrettierIgnore());
+    await new PrettierGenerator(rootDir, options).generate();
 }
 };

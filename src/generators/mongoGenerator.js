@@ -1,5 +1,15 @@
-export function buildUserModel({ useJWT }){
-  const passwordField = useJWT
+import { BaseGenerator } from "./baseGenerator.js";
+
+export class MongoModelGenerator extends BaseGenerator{
+  getFiles(){
+    return {
+      "src/models/User.js": this.buildUserModel(),
+    };
+  };
+
+  buildUserModel(){
+    const useJWT = this.options.useJWT;
+    const passwordField = useJWT
     ? `
 password: {
   type: String,
@@ -23,4 +33,5 @@ const userSchema = new mongoose.Schema({
 
 export default mongoose.model("User", userSchema);
   `
+  };
 };
