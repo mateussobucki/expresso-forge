@@ -19,12 +19,14 @@ export class BaseGenerator{
     };
   };
 
+  //Create files and dirs if they dont exist yet
   async writeFile(relativePath, content){
     const fullPath = path.join(this.rootDir, relativePath);
+    await fs.mkdir(path.dirname(fullPath), { recursive: true });
     await fs.writeFile(fullPath, content);
   };
 
-  //Load and create files in this format: filename:content
+  //Load files in this format: filename:content
   async getFiles(){
     return {};
   };

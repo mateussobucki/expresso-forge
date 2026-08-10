@@ -7,6 +7,10 @@ export class MongoModelGenerator extends BaseGenerator{
     };
   };
 
+  getDependencies(){
+    return { "mongoose": "^8.5.0" };
+  };
+
   buildUserModel(){
     const useJWT = this.options.useJWT;
     const passwordField = useJWT

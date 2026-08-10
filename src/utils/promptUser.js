@@ -1,10 +1,14 @@
-import { input, confirm } from '@inquirer/prompts';
+import { input, confirm, select } from '@inquirer/prompts';
 import chalk from 'chalk';
 
 export async function promptUser(){
-  const useMongoDB = await confirm({
-    message: chalk.yellow("Want to include MongoDB configuration?"),
-    default: false,
+  const database = await select({
+    message: chalk.yellow("Which database do you want to use?"),
+    choices: [
+      { name: "None", value: "none" },
+      { name: "MongoDB", value: "mongodb" },
+      { name: "PostgreSQL", value: "postgres" },
+    ],
   });
 
   const useJWT = await confirm({
@@ -42,5 +46,5 @@ export async function promptUser(){
     default: false,
   });
 
-  return { useMongoDB, useJWT, useSocketIO, useDocker, useESLint, usePrettier, installDependencies, gitInit };
+  return { database, useJWT, useSocketIO, useDocker, useESLint, usePrettier, installDependencies, gitInit };
 };

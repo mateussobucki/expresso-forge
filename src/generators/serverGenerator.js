@@ -5,27 +5,35 @@ export class ServerGenerator extends BaseGenerator{
     return {"server.js": this.buildServerJs()};
   };
 
-  //mongoose and socket.io deps are loaded here
+  //socket.io deps are loaded here
   getDependencies(){
-    const { useMongoDB, useSocketIO } = this.options;
+    const { useSocketIO } = this.options;
     const deps = {};
-    if (useMongoDB) deps.mongoose = "^8.5.0";
     if (useSocketIO) deps["socket.io"] = "^4.7.5";
     return deps;
   };
 
   getFeatures(){
-    const { useMongoDB, useJWT, useSocketIO } = this.options;
+    const { database, useJWT, useSocketIO } = this.options;
 
     return [
       {
-        active: useMongoDB,
+        active: database === "mongodb",
         imports: [`import mongoose from "mongoose";`],
         setup: `
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log("Error trying to connect to MongoDB:", err))
 ` 
+      },
+      {
+        active: database === "postgres",
+        imports: [`import pool from "./src/config/database.js"`],
+        setup: `
+          pool.query("SELECT NOW()")
+  .then(() => console.log("PostgreSQL connected"))
+  .catch((err) => console.error("PostgreSQL connection error:", err));
+        `
       },
       {
         active: useJWT,

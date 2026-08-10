@@ -6,6 +6,7 @@ A command-line tool that generates Node.js/Express project boilerplate — inter
 
 - Scaffolds a ready-to-run Express project in seconds
 - Optional MongoDB (Mongoose) setup
+- Optional PostgreSQL setup
 - Optional JWT authentication (register/login routes, auth middleware, bcrypt password hashing)
 - Optional Socket.io real-time setup
 - Optional Docker setup (Dockerfile + docker-compose)
@@ -37,7 +38,7 @@ express-cli create <project-name>
 You'll be walked through a few prompts:
 
 ```
-✔ Want to include MongoDB configuration? Yes
+✔ Which database do you want to use? MongoDB
 ✔ Want to include JWT configuration? Yes
 ✔ Want to include Socket.io configuration? No
 ✔ Want to include Docker configuration? Yes
@@ -65,8 +66,15 @@ npm run dev
 │   │   └── User.js               # only if MongoDB is selected
 │   ├── controllers/
 │   │   └── authController.js     # only if JWT is selected
-│   └── middlewares/
-│       └── authMiddleware.js     # only if JWT is selected
+│   ├── middlewares/
+│   │   └── authMiddleware.js     # only if JWT is selected
+│   ├── config/
+│   │   └── database.js           # only if PostgreSQL is selected
+│   ├── repositories/
+│   │   └── userRepository.js     # only if PostgreSQL is selected
+│   └── db/
+│       └── migrations/
+│           └── 001_create_users_table.sql  # only if PostgreSQL is selected
 ├── server.js
 ├── package.json
 ├── eslint.config.js              # only if ESLint is selected
@@ -84,6 +92,7 @@ npm run dev
 | Option | What it adds |
 |---|---|
 | MongoDB | Mongoose connection setup, `User` model, `MONGO_URI` in `.env.example` |
+| PostgreSQL | `pg` connection pool, users table migration, `userRepository.js` for queries, `DATABASE_URL` in `.env.example` |
 | JWT | `/auth/register` and `/auth/login` routes (controller + routes split), password hashing with bcrypt, auth middleware, `JWT_SECRET` in `.env.example` |
 | Socket.io | HTTP server wrapped with Socket.io, basic connection handler |
 | Docker | `Dockerfile`, `docker-compose.yml` (with a MongoDB service if MongoDB is also selected), and `.dockerignore` |
