@@ -11,10 +11,16 @@ export async function promptUser(){
     ],
   });
 
-  const useJWT = await confirm({
-    message: chalk.yellow("Want to include JWT configuration?"),
-    default: false,
-  });
+  let useJWT = false;
+  if(database !== "none"){
+    useJWT = await confirm({
+      message: chalk.yellow("Want to include JWT configuration?"),
+      default: false,
+    });
+  }
+  else{
+    console.log(chalk.gray("(JWT authentication requires a database — skipping)"));
+  }
 
   const useSocketIO = await confirm({
     message: chalk.yellow("Want to include SocketIO configuration?"),

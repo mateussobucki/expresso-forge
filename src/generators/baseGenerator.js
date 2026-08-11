@@ -11,7 +11,7 @@ export class BaseGenerator{
     this.options = options;
   };
 
-  //Standard generate
+  //Generate files following other classes methods
   async generate(){
     const files = this.getFiles();
     for(const [relativePath, content] of Object.entries(files)){
@@ -26,7 +26,7 @@ export class BaseGenerator{
     await fs.writeFile(fullPath, content);
   };
 
-  //Load files in this format: filename:content
+  //Load files in this format: filepath:content
   async getFiles(){
     return {};
   };

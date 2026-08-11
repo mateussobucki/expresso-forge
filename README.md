@@ -61,13 +61,13 @@ npm run dev
 <project-name>/
 ├── src/
 │   ├── routes/
-│   │   └── authRoutes.js         # only if JWT is selected
+│   │   └── authRoutes.js         # only if JWT and a DataBase is selected
 │   ├── models/
 │   │   └── User.js               # only if MongoDB is selected
 │   ├── controllers/
-│   │   └── authController.js     # only if JWT is selected
+│   │   └── authController.js     # only if JWT and a DataBase is selected
 │   ├── middlewares/
-│   │   └── authMiddleware.js     # only if JWT is selected
+│   │   └── authMiddleware.js     # only if JWT and a DataBase is selected
 │   ├── config/
 │   │   └── database.js           # only if PostgreSQL is selected
 │   ├── repositories/

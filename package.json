@@ -5,14 +5,21 @@
     "express-cli": "./bin/cli.js"
   },
   "version": "1.0.0",
-  "description": "",
+  "description": "Interactive CLI to scaffold Node.js/Express projects with optional MongoDB, PostgreSQL, JWT auth, Socket.io, Docker, ESLint, and Prettier.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Mateus Sobucki",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mateussobucki/express-cli.git"
+  },
+    "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@inquirer/prompts": "^8.5.2",
     "chalk": "^6.0.0",

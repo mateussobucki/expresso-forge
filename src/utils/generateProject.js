@@ -13,6 +13,9 @@ import { PrettierGenerator } from '../generators/prettierGenerator.js';
 
 export async function generateProject(projectName, options = {}){
   await validateProjectName(projectName);
+  if(options.useJWT && options.database === "none"){
+    throw new Error("JWT authentication requires a database (MongoDB or PostgreSQL). Please select one.");
+  }
 
   const rootDir = path.join(process.cwd(), projectName);
   const { database, useJWT, useSocketIO, useDocker, useESLint, usePrettier } = options;

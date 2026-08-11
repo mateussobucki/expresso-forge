@@ -20,6 +20,7 @@ program
   .command('create <project-name>')
   .description('Creates a new express project')
   .option("--mongodb", "Include MongoDB configuration")
+  .option("--postgres", "Include PostgreSQL configuration")
   .option("--jwt", "Include JWT authentication")
   .option("--socketio", "Include Socket.io configuration")
   .option("--docker", "Include Docker configuration")
