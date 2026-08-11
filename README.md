@@ -1,4 +1,4 @@
-# express-cli
+# expresso-forge
 
 A command-line tool that generates Node.js/Express project boilerplate — interactively configured with the features you need.
 
@@ -18,21 +18,22 @@ A command-line tool that generates Node.js/Express project boilerplate — inter
 
 ## Installation
 
-Clone the repository and link it globally:
+Install globally via npm:
 
 ```bash
-git clone https://github.com/mateussobucki/express-cli.git
-cd express-cli
-npm install
-npm link
+npm install -g expresso-forge
 ```
 
-This makes the `express-cli` command available anywhere on your machine.
+Or run it directly without installing, using `npx`:
+
+```bash 
+npx expresso-forge create <project-name>
+```
 
 ## Usage
 
 ```bash
-express-cli create <project-name>
+expresso-forge create <project-name>
 ```
 
 You'll be walked through a few prompts:
@@ -48,11 +49,25 @@ You'll be walked through a few prompts:
 ✔ Initialize a git repository? Yes
 ```
 
-Based on your answers, `express-cli` generates a complete project structure, installs dependencies, and initializes git — ready to run.
+Based on your answers, `expresso-forge` generates a complete project structure, installs dependencies, and initializes git — ready to run.
 
 ```bash
 cd <project-name>
 npm run dev
+```
+
+### Non-interactive mode
+ 
+You can skip the prompts entirely by passing flags along with `-y`:
+ 
+```bash
+expresso-forge create <project-name> --mongodb --jwt --docker -y
+```
+ 
+See all available flags and examples with:
+ 
+```bash
+expresso-forge create --help
 ```
 
 ## Generated project structure

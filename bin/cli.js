@@ -12,7 +12,7 @@ import { installDependencies, initGitRepo } from '../src/utils/postSetup.js';
 const program = new Command();
 
 program
-  .name('express-cli')
+  .name('expresso-forge')
   .description("Interactive CLI to scaffold Node.js/Express projects with optional MongoDB, JWT, Socket.io, Docker, ESLint, and Prettier.")
   .version('1.0.0');
 

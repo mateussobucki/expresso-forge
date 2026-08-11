@@ -1,8 +1,8 @@
 {
-  "name": "express-cli",
+  "name": "expresso-forge",
   "type": "module",
   "bin": {
-    "express-cli": "./bin/cli.js"
+    "expresso-forge": "./bin/cli.js"
   },
   "version": "1.0.0",
   "description": "Interactive CLI to scaffold Node.js/Express projects with optional MongoDB, PostgreSQL, JWT auth, Socket.io, Docker, ESLint, and Prettier.",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mateussobucki/express-cli.git"
+    "url": "https://github.com/mateussobucki/expresso-forge.git"
   },
     "publishConfig": {
     "access": "public"

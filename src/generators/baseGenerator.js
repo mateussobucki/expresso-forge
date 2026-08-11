@@ -11,7 +11,7 @@ export class BaseGenerator{
     this.options = options;
   };
 
-  //Generate files following other classes methods
+  //Generate files following child classes methods
   async generate(){
     const files = this.getFiles();
     for(const [relativePath, content] of Object.entries(files)){
