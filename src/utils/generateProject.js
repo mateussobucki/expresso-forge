@@ -6,6 +6,7 @@ import { validateProjectName } from './validateProjectName.js';
 import { ServerGenerator } from '../generators/serverGenerator.js';
 import { MongoModelGenerator } from '../generators/mongoGenerator.js';
 import { PostgresGenerator } from '../generators/postgresGenerator.js';
+import { PrismaPostgresGenerator } from '../generators/prismaPostgresGenerator.js';
 import { AuthGenerator } from '../generators/authGenerator.js';
 import { DockerGenerator } from '../generators/dockerGenerator.js';
 import { ESLintGenerator } from '../generators/ESLintGenerator.js';
@@ -23,7 +24,8 @@ export async function generateProject(projectName, options = {}){
   const generators = [new ServerGenerator(rootDir, options)];
 
   if (options.database === "mongodb") generators.push(new MongoModelGenerator(rootDir, options));
-  if (options.database === "postgres") generators.push(new PostgresGenerator(rootDir, options));
+  // if (options.database === "postgres") generators.push(new PostgresGenerator(rootDir, options));
+  if (options.database === "postgres") generators.push(new PrismaPostgresGenerator(rootDir, options));
   if (options.useJWT) generators.push(new AuthGenerator(rootDir, options));
   if (options.useDocker) generators.push(new DockerGenerator(rootDir, options));
   if (options.useESLint) generators.push(new ESLintGenerator(rootDir, options));
@@ -85,7 +87,8 @@ export async function generateProject(projectName, options = {}){
 
   //Postgres (Config, migration, repository)
   if(database === "postgres"){
-    await new PostgresGenerator(rootDir, options).generate();
+    // await new PostgresGenerator(rootDir, options).generate();
+    await new PrismaPostgresGenerator(rootDir, options).generate();
   }
 
   //auth (controller, route and middleware)

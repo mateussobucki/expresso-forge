@@ -107,7 +107,7 @@ expresso-forge create --help
 | Option | What it adds |
 |---|---|
 | MongoDB | Mongoose connection setup, `User` model, `MONGO_URI` in `.env.example` |
-| PostgreSQL | `pg` connection pool, users table migration, `userRepository.js` for queries, `DATABASE_URL` in `.env.example` |
+| PostgreSQL | Prisma ORM setup (`schema.prisma` with UUID `User` model, `PrismaClient` instance in `database.js`, Prisma CLI scripts) or `pg` connection pool with SQL migration, `userRepository.js` for queries, `DATABASE_URL` in `.env.example` |
 | JWT | `/auth/register` and `/auth/login` routes (controller + routes split), password hashing with bcrypt, auth middleware, `JWT_SECRET` in `.env.example` |
 | Socket.io | HTTP server wrapped with Socket.io, basic connection handler |
 | Docker | `Dockerfile`, `docker-compose.yml` (with a MongoDB service if MongoDB is also selected), and `.dockerignore` |
