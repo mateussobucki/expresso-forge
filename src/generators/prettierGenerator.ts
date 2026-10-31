@@ -1,26 +1,27 @@
 import { BaseGenerator } from "./baseGenerator.js";
+import type { DependencyMap, FileMap, ScriptMap } from "../types.js";
 
 export class PrettierGenerator extends BaseGenerator{
-  getFiles(){
+  override getFiles(): FileMap {
     return {
       ".prettierrc": this.buildPrettierConfig(),
       ".prettierignore": `node_modules\npackage-lock.json\n`
     };
   };
 
-  getDevDependencies() {
+  override getDevDependencies(): DependencyMap {
     return {
       prettier: "^3.3.3",
     };
   }
 
-  getScripts() {
+  override getScripts(): ScriptMap {
     return {
       format: "prettier --write .",
     };
   }
 
-  buildPrettierConfig() {
+  private buildPrettierConfig(): string {
     return JSON.stringify(
       {
         semi: true,

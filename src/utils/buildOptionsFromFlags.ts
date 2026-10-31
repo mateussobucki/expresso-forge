@@ -1,14 +1,16 @@
-export function buildOptionsFromFlags(flags){
-  const database = flags.mongodb ?
-  "mongodb"
-  : flags.postgres ?
-  "postgres"
-  : "none";
-  
+import type { CreateFlags, Database, ProjectOptions } from "../types.js";
+
+export function buildOptionsFromFlags(flags: CreateFlags): ProjectOptions {
+  const database: Database = flags.mongodb
+    ? "mongodb"
+    : flags.postgres
+      ? "postgres"
+      : "none";
+
   const useJWT = Boolean(flags.jwt);
-  if(useJWT && database === "none"){
+  if (useJWT && database === "none") {
     throw new Error("JWT authentication requires a database. Pass --mongodb or --postgres along with --jwt.");
-  };
+  }
 
   return {
     database,
@@ -20,4 +22,4 @@ export function buildOptionsFromFlags(flags){
     installDependencies: flags.install !== false,
     gitInit: flags.git !== false,
   };
-};
+}
