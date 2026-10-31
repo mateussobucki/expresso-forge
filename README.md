@@ -85,11 +85,10 @@ expresso-forge create --help
 │   │   └── authMiddleware.js     # only if JWT and a DataBase is selected
 │   ├── config/
 │   │   └── database.js           # only if PostgreSQL is selected
-│   ├── repositories/
-│   │   └── userRepository.js     # only if PostgreSQL is selected
-│   └── db/
-│       └── migrations/
-│           └── 001_create_users_table.sql  # only if PostgreSQL is selected
+│   └── repositories/
+│       └── userRepository.js     # only if PostgreSQL is selected
+├── prisma/
+│   └── schema.prisma             # only if PostgreSQL is selected
 ├── server.js
 ├── package.json
 ├── eslint.config.js              # only if ESLint is selected
@@ -107,7 +106,7 @@ expresso-forge create --help
 | Option | What it adds |
 |---|---|
 | MongoDB | Mongoose connection setup, `User` model, `MONGO_URI` in `.env.example` |
-| PostgreSQL | Prisma ORM setup (`schema.prisma` with UUID `User` model, `PrismaClient` instance in `database.js`, Prisma CLI scripts) or `pg` connection pool with SQL migration, `userRepository.js` for queries, `DATABASE_URL` in `.env.example` |
+| PostgreSQL | Prisma ORM setup (`schema.prisma` with UUID `User` model, `PrismaClient` instance in `database.js`, Prisma CLI scripts), `userRepository.js` for queries, `DATABASE_URL` in `.env.example` |
 | JWT | `/auth/register` and `/auth/login` routes (controller + routes split), password hashing with bcrypt, auth middleware, `JWT_SECRET` in `.env.example` |
 | Socket.io | HTTP server wrapped with Socket.io, basic connection handler |
 | Docker | `Dockerfile`, `docker-compose.yml` (with a MongoDB service if MongoDB is also selected), and `.dockerignore` |
@@ -126,3 +125,16 @@ Built with:
 ## License
 
 MIT
+
+## Development
+
+The CLI is written in TypeScript (`src/`) and compiled to `dist/`.
+
+```bash
+npm install
+npm run dev -- create my-app   # run from source with tsx
+npm run typecheck              # type-check without emitting
+npm run build                  # compile to dist/
+npm start -- create my-app     # run the compiled CLI
+npm link                       # use `expresso-forge` globally from this checkout
+```

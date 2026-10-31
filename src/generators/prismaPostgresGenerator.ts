@@ -1,7 +1,8 @@
 import { BaseGenerator } from "./baseGenerator.js";
+import type { DependencyMap, FileMap, ScriptMap } from "../types.js";
 
 export class PrismaPostgresGenerator extends BaseGenerator{
-  getFiles(){
+  override getFiles(): FileMap {
     return {
       "prisma/schema.prisma": this.buildPrismaSchema(),
       "src/config/database.js": this.buildDatabaseConfig(),
@@ -9,15 +10,15 @@ export class PrismaPostgresGenerator extends BaseGenerator{
     };
   };
 
-  getDependencies(){
+  override getDependencies(): DependencyMap {
     return { "@prisma/client": "^6.1.0" };
   };
 
-  getDevDependencies(){
+  override getDevDependencies(): DependencyMap {
     return { "prisma": "^6.1.0" };
   };
 
-  getScripts(){
+  override getScripts(): ScriptMap {
     return {
       "postinstall": "prisma generate",
       "prisma:generate": "prisma generate",
@@ -27,7 +28,7 @@ export class PrismaPostgresGenerator extends BaseGenerator{
     };
   };
 
-  buildPrismaSchema(){
+  private buildPrismaSchema(): string {
     const { useJWT } = this.options;
 
     const passwordField = useJWT
@@ -55,7 +56,7 @@ model User {
 `;
   };
 
-  buildDatabaseConfig(){
+  private buildDatabaseConfig(): string {
     return `import { PrismaClient } from "@prisma/client";
 import dotenv from "dotenv";
 
@@ -67,7 +68,7 @@ export default prisma;
 `;
   };
 
-  buildUserRepository(){
+  private buildUserRepository(): string {
     return `import prisma from "../config/database.js";
 
 export async function createUser({ name, email, password }) {

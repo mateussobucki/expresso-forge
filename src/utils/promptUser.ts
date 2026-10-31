@@ -1,8 +1,9 @@
 import { input, confirm, select } from '@inquirer/prompts';
 import chalk from 'chalk';
+import type { Database, ProjectOptions } from '../types.js';
 
-export async function promptUser(){
-  const database = await select({
+export async function promptUser(): Promise<ProjectOptions> {
+  const database = await select<Database>({
     message: chalk.yellow("Which database do you want to use?"),
     choices: [
       { name: "None", value: "none" },

@@ -1,7 +1,8 @@
 import { BaseGenerator } from "./baseGenerator.js";
+import type { FileMap } from "../types.js";
 
 export class DockerGenerator extends BaseGenerator{
-  getFiles(){
+  override getFiles(): FileMap {
     return {
       "Dockerfile": this.buildDockerfile(),
       "docker-compose.yaml": this.buildDockerCompose(),
@@ -9,7 +10,7 @@ export class DockerGenerator extends BaseGenerator{
     };
   };
 
-  buildDockerfile(){
+  private buildDockerfile(): string {
     return `FROM node:22-alpine
 
 WORKDIR /app
@@ -25,8 +26,8 @@ CMD ["npm", "start"]
 `;
   };
 
-  buildDockerCompose(){
-    const useMongoDB = this.options.useMongoDB;
+  private buildDockerCompose(): string {
+    const useMongoDB = this.options.database === "mongodb";
     const mongoService = useMongoDB
     ? `
   mongo:
@@ -61,7 +62,7 @@ volumes:
 ${mongoService}${volumes}`;
   };
 
-  buildDockerignore(){
+  private buildDockerignore(): string {
     return `node_modules
 .env
 .git

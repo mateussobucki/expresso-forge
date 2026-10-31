@@ -1,17 +1,18 @@
 import { BaseGenerator } from "./baseGenerator.js";
+import type { DependencyMap, FileMap } from "../types.js";
 
 export class MongoModelGenerator extends BaseGenerator{
-  getFiles(){
+  override getFiles(): FileMap {
     return {
       "src/models/User.js": this.buildUserModel(),
     };
   };
 
-  getDependencies(){
+  override getDependencies(): DependencyMap {
     return { "mongoose": "^8.5.0" };
   };
 
-  buildUserModel(){
+  private buildUserModel(): string {
     const useJWT = this.options.useJWT;
     const passwordField = useJWT
     ? `

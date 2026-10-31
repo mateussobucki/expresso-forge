@@ -1,14 +1,15 @@
-import { BaseGenerator } from "./BaseGenerator.js";
+import { BaseGenerator } from "./baseGenerator.js";
+import type { DependencyMap, FileMap, ScriptMap } from "../types.js";
 
 export class ESLintGenerator extends BaseGenerator {
-  getFiles() {
+  override getFiles(): FileMap {
     return {
       "eslint.config.js": this.buildConfig(),
     };
   };
 
-  getDevDependencies() {
-    const deps = {
+  override getDevDependencies(): DependencyMap {
+    const deps: DependencyMap = {
       eslint: "^9.9.0",
       "@eslint/js": "^9.9.0",
     };  
@@ -20,13 +21,13 @@ export class ESLintGenerator extends BaseGenerator {
     return deps;
   };
 
-  getScripts() {
+  override getScripts(): ScriptMap {
     return {
       lint: "eslint .",
     };
   };
 
-  buildConfig() {
+  private buildConfig(): string {
     return `import js from "@eslint/js";
 
 export default [

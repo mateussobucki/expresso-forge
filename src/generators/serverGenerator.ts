@@ -1,22 +1,30 @@
 import { BaseGenerator } from "./baseGenerator.js";
+import type { DependencyMap, FileMap } from "../types.js";
+
+/** A piece of server.js that is included when `active` is true. */
+interface ServerFeature {
+  active: boolean;
+  imports: string[];
+  setup: string;
+}
 
 export class ServerGenerator extends BaseGenerator{
-  getFiles(){
+  override getFiles(): FileMap {
     return {"server.js": this.buildServerJs()};
   };
 
   //socket.io deps are loaded here
-  getDependencies(){
+  override getDependencies(): DependencyMap {
     const { useSocketIO } = this.options;
-    const deps = {};
+    const deps: DependencyMap = {};
     if (useSocketIO) deps["socket.io"] = "^4.7.5";
     return deps;
   };
 
-  getFeatures(){
+  private getFeatures(): ServerFeature[] {
     const { database, useJWT, useSocketIO } = this.options;
 
-    return [
+    const features: ServerFeature[] = [
       {
         active: database === "mongodb",
         imports: [`import mongoose from "mongoose";`],
@@ -28,12 +36,12 @@ mongoose.connect(process.env.MONGO_URI)
       },
       {
         active: database === "postgres",
-        imports: [`import pool from "./src/config/database.js"`],
+        imports: [`import prisma from "./src/config/database.js";`],
         setup: `
-          pool.query("SELECT NOW()")
+prisma.$connect()
   .then(() => console.log("PostgreSQL connected"))
   .catch((err) => console.error("PostgreSQL connection error:", err));
-        `
+`
       },
       {
         active: useJWT,
@@ -58,10 +66,12 @@ io.on("connection", (socket) => {
 });
 `,
       },
-    ].filter(feature => feature.active);
+    ];
+
+    return features.filter(feature => feature.active);
   };
 
-  buildServerJs(){
+  private buildServerJs(): string {
     const features = this.getFeatures();
 
     const imports = [
@@ -72,7 +82,7 @@ io.on("connection", (socket) => {
 
   const setup = features.map(f => f.setup).join("");
 
-  const listen = features.useSocketIO
+  const listen = this.options.useSocketIO
     ? `httpServer.listen(PORT, () => console.log(\`Server running on port: \${PORT}\`));`
     : `app.listen(PORT, () => console.log(\`Server running on port: \${PORT}\`));`;
 

@@ -1,30 +1,28 @@
 import fs from 'fs/promises';
-import { version } from 'os';
 import path from 'path';
-import { start } from 'repl';
 import { validateProjectName } from './validateProjectName.js';
+import type { DependencyMap, ProjectOptions, ScriptMap } from '../types.js';
+import type { BaseGenerator } from '../generators/baseGenerator.js';
 import { ServerGenerator } from '../generators/serverGenerator.js';
 import { MongoModelGenerator } from '../generators/mongoGenerator.js';
-import { PostgresGenerator } from '../generators/postgresGenerator.js';
 import { PrismaPostgresGenerator } from '../generators/prismaPostgresGenerator.js';
 import { AuthGenerator } from '../generators/authGenerator.js';
 import { DockerGenerator } from '../generators/dockerGenerator.js';
 import { ESLintGenerator } from '../generators/ESLintGenerator.js';
 import { PrettierGenerator } from '../generators/prettierGenerator.js';
 
-export async function generateProject(projectName, options = {}){
+export async function generateProject(projectName: string, options: ProjectOptions): Promise<void> {
   await validateProjectName(projectName);
   if(options.useJWT && options.database === "none"){
     throw new Error("JWT authentication requires a database (MongoDB or PostgreSQL). Please select one.");
   }
 
   const rootDir = path.join(process.cwd(), projectName);
-  const { database, useJWT, useSocketIO, useDocker, useESLint, usePrettier } = options;
+  const { database, useJWT } = options;
   
-  const generators = [new ServerGenerator(rootDir, options)];
+  const generators: BaseGenerator[] = [new ServerGenerator(rootDir, options)];
 
   if (options.database === "mongodb") generators.push(new MongoModelGenerator(rootDir, options));
-  // if (options.database === "postgres") generators.push(new PostgresGenerator(rootDir, options));
   if (options.database === "postgres") generators.push(new PrismaPostgresGenerator(rootDir, options));
   if (options.useJWT) generators.push(new AuthGenerator(rootDir, options));
   if (options.useDocker) generators.push(new DockerGenerator(rootDir, options));
@@ -32,12 +30,12 @@ export async function generateProject(projectName, options = {}){
   if (options.usePrettier) generators.push(new PrettierGenerator(rootDir, options));
 
   //CONFIGURE DEPENDENCIES
-  let dependencies = {
+  const dependencies: DependencyMap = {
     express: "^4.19.2",
     dotenv: "^16.4.5",
   };
-  let devDependencies = {};
-  let scripts = {
+  const devDependencies: DependencyMap = {};
+  const scripts: ScriptMap = {
     start: "node server.js",
     dev: "node --watch server.js",
   };
@@ -65,10 +63,7 @@ export async function generateProject(projectName, options = {}){
     JSON.stringify(packageJson, null, 2)
   );
   
-  //CREATE FILES
-
-  //server.js
-  await new ServerGenerator(rootDir, options).generate();
+  //CREATE FILES NOT HANDLED BY GENERATORS
 
   //.env
   let envContent = "PORT=3000\n";
@@ -79,35 +74,4 @@ export async function generateProject(projectName, options = {}){
 
   //gitignore
   await fs.writeFile(path.join(rootDir, ".gitignore"), "node_modules\n.env\n");
-
-  //Mongodb (user model)
-  if(database === "mongodb"){
-    await new MongoModelGenerator(rootDir, options).generate();
-  };
-
-  //Postgres (Config, migration, repository)
-  if(database === "postgres"){
-    // await new PostgresGenerator(rootDir, options).generate();
-    await new PrismaPostgresGenerator(rootDir, options).generate();
-  }
-
-  //auth (controller, route and middleware)
-  if(useJWT){
-    await new AuthGenerator(rootDir, options).generate();
-  };
-
-  //Docker files
-  if(useDocker){
-    await new DockerGenerator(rootDir, options).generate();
-  };
-
-  //ESLint
-  if(useESLint){
-    await new ESLintGenerator(rootDir, options).generate();
-  };
-
-  //Prettier
-  if (usePrettier) {
-    await new PrettierGenerator(rootDir, options).generate();
-}
 };

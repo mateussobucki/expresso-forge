@@ -1,7 +1,8 @@
+import type { DependencyMap, FileMap } from "../types.js";
 import { BaseGenerator } from "./baseGenerator.js";
 
 export class AuthGenerator extends BaseGenerator{
-  getFiles(){
+  override getFiles(): FileMap {
     return {
       "src/controllers/authController.js": this.buildAuthController(),
       "src/routes/authRoutes.js": this.buildAuthRoutes(),
@@ -9,14 +10,14 @@ export class AuthGenerator extends BaseGenerator{
     };
   };
 
-  getDependencies() {
+  override getDependencies(): DependencyMap {
     return {
       jsonwebtoken: "^9.0.2",
       bcrypt: "^5.1.1",
     };
   };
 
-  buildAuthController(){
+  private buildAuthController(): string {
     const { database } = this.options;
     
     //Postgres
@@ -95,9 +96,11 @@ export async function login(req, res) {
   }
 }`;
     };
+
+    throw new Error("JWT authentication requires a database (MongoDB or PostgreSQL).");
   };
 
-  buildAuthRoutes(){
+  private buildAuthRoutes(): string {
     return `import { Router } from "express";
 import { register, login } from "../controllers/authController.js";
 
@@ -109,7 +112,7 @@ router.post("/login", login);
 export default router;`;
   };
 
-  buildAuthMiddleware(){
+  private buildAuthMiddleware(): string {
     return `import jwt from "jsonwebtoken"
 
 export function authMiddleware(req, res, next){
